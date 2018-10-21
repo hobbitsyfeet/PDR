@@ -33,7 +33,7 @@ def trunc(string, delimiter=" ", n=10):
 #returns a list of documents for a given section, printout(T/F) will display summary of contents
 def createDocuments(section,printout=False):
 	documents = []
-	doc = document
+	doc = Document
 	#find python language reference and grab contents
 	sectionBlock = soup.find("a", text=section) 	#look for this line in contents.html
 	referenceContent = sectionBlock.find_next_sibling() #everything within language reference
@@ -41,7 +41,7 @@ def createDocuments(section,printout=False):
 
 	#for each content, get the title, link and text
 	for element in referenceContent.find_all("a"):	# find all "a" tags within referenceContent
-		doc = document("","","")
+		doc = Document
 		link = element.get("href")				# extract the link matched with title
 		title = element.text
 
@@ -69,20 +69,16 @@ def createDocuments(section,printout=False):
 		documents.append(doc)
 	return documents
 
-'''
-documents = createDocuments("The Python Language Reference",True)
-for i in documents:
-	print(i.title)
-	print(i.link)
-	print(i.text)
-'''
-'''
-HOW TO USE
-documents = []
+
+
+
+
+#HOW TO USE
+#create a list named documents
+#documents = []
 
 #Smaller dataset - recomended for testing
-documents.append(createDocuments("The Python Language Reference",False))
+#documents.append(createDocuments("The Python Language Reference",True))
 
 #Larger dataset
-documents.append(createDocuments("The Python Standard Library",False))
-'''
+#documents.append(createDocuments("The Python Standard Library",False))
