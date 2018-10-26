@@ -27,7 +27,7 @@ class TermDocumentMatrix():
         """
         s = set()
         for d in document_list:
-            s = s.union(set(d.text.split()))
+            s = s.union(set(d.text))
         self.terms = list(s)
     
     def construct_matrix(self, document_list):
