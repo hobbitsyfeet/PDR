@@ -26,7 +26,7 @@ def exportDocument(docs,name):
 	#file.close()
 
 def readDocument(name):
-	print("Reading {}...").format(name)
+	#print("Reading {}...").format(name)
 	file = open("./docs/"+name,"r")
 	totalTerms = 0
 	documents = []
@@ -50,7 +50,7 @@ def readDocument(name):
 
 
 	#file.close()
-	print("Finished Reading " + name)
-	print("For {} documents, {} terms were extracted").format(len(documents), totalTerms)
+	#print("Finished Reading " + name)
+	#print("For {} documents, {} terms were extracted").format(len(documents), totalTerms)
 
 	return documents

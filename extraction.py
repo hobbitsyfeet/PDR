@@ -2,13 +2,14 @@ from bs4 import BeautifulSoup
 from document import Document
 import export
 import os
+from imp import reload
 
 from NLTKtext import prepare_document
 
 # encoding=utf8
-import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+#import sys
+#reload(sys)
+#sys.setdefaultencoding('utf8')
 
 
 
@@ -99,17 +100,17 @@ def createDocuments(section,printout=False):
 	return documents
 
 
+if __name__ == '__main__':
+	print("Starting Process")
 
-print("Starting Process")
+	#HOW TO USE
+	#create a list named documents
+	documents = []
+	#Smaller dataset - recomended for testing
+	PLR = createDocuments("The Python Language Reference",False)
 
-#HOW TO USE
-#create a list named documents
-documents = []
-#Smaller dataset - recomended for testing
-PLR = createDocuments("The Python Language Reference",False)
+	#Larger dataset
+	PSL = createDocuments("The Python Standard Library",False)
 
-#Larger dataset
-PSL = createDocuments("The Python Standard Library",False)
-
-documents.extend(PLR)
-documents.extend(PSL)
+	documents.extend(PLR)
+	documents.extend(PSL)
