@@ -10,19 +10,24 @@ def createFile(name):
 	return file
 
 
-#takes a list of documents and prints them into a file
+#takes a document and writes it into a file
 def exportDocument(docs,name):
 	if not os.path.isdir("./docs"):
 		os.mkdir("./docs")
-	file = open("./docs/"+name,"w")
+	file = open("./docs/"+name,"a")
 
-	for eachDocument in docs:
-		file.write(eachDocument.title + "\n")
-		for word in eachDocument.text:
+	#for eachDocument in docs:
+	file.write(docs.title + "\n")
+	for word in docs.text:
+		#print(word)
+		try:
 			file.write(word)
 			file.write (" ")
-		file.write("\n")
-		file.write(eachDocument.link + "\n")
+		#BAD WORD, don't write
+		except:
+			print("skipping word" + str(word))
+	file.write("\n")
+	file.write(docs.link + "\n")
 	#file.close()
 
 def readDocument(name):
