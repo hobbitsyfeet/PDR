@@ -27,4 +27,5 @@ def prepare_document(tf):
 	#print(word_list)
 	return word_list
 
-print(prepare_document(text))
+#print(prepare_document(text))
+print(nltk.corpus.stopwords.words('english'))
