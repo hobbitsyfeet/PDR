@@ -1,32 +1,42 @@
-import numpy as np
 import scipy
+import numpy as np
+from scipy import linalg
+from scipy.sparse import linalg
 from test_doc import test_doc
 from document import Document
 
 
+def cosine_rank(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+
 class TermDocumentMatrix():
-    """ Rows correspond to terms and columns to documents
+    """ Rank-k approximation to the term-document matrix for a given set of documents.
+        Rows correspond to terms and columns to documents.
     """
 
     def __init__(self, document_list, k):
-        self.document_info = [{}]
         self.term_inds = []
         self.k = k
-        
-        # Frequency matrix 
         self.matrix = None
+        # Could be used to save/load file easily later
         self.matrix_str = ""
         
         self.get_terms(document_list)
         self.construct_matrix(document_list)
 
         # Singular value decompisition
-        print (self.matrix.shape)
+        #  U  - unitary matrix 
+        #  S  - diagonal matrix containing k - largest singular values
+        #  Vt - transpose of document vectors
         self.U, self.S, self.Vt = scipy.sparse.linalg.svds(
-            self.matrix, k=min(min(self.matrix.shape)-1, self.k))
+            self.matrix, 
+            k=min(min(self.matrix.shape)-1, self.k)) # if k too large, keep as many as possible
+        self.S = scipy.matrix(np.diag(self.S))
+
 
     def get_terms(self, document_list):
-        """ Fill terms array with all unique terms
+        """ Fill term_inds map with an index for each unique term
         """
         s = set()
         for d in document_list:
@@ -34,36 +44,48 @@ class TermDocumentMatrix():
         tlist = list(s)
         self.term_inds = {tlist[i]:i for i in range(len(tlist))}
         
-    
+
     def construct_matrix(self, document_list):
         """ Fill the (i,j)th entry with the number of occurrences of 
             term i in document j
         """
-        self.matrix = scipy.matrix([[0]*len(document_list)]*len(self.term_inds), dtype=float)
+        self.matrix = scipy.matrix(
+            [ [0] * len(document_list)] * len(self.term_inds), 
+            dtype=float)
 
-        for doc_ind, doc in enumerate(document_list):
-            print("doc: " + str(doc_ind + 1) + " of " + str(len(document_list))) 
-            for  term in doc.text:
-                self.matrix.A[self.term_inds[term]][doc_ind] += 1
-        self.matrix_str = "TODO"
+        for j, doc in enumerate(document_list):
+            for term in doc.text:
+                i = self.term_inds[term]
+                self.matrix.A[i][j] += 1
 
-    def reduce_rank(self, k):
-        """ Find an approximation to the frequency matrix by keeping
-            only those entries in matrices U, and Vt corresponding to
-            the largest k entries in the singular value matrix. 
+
+    def query(self, query_words, num_results = -1):
+        """ Given a list of words in a query return a list of num_results indicating the
+            closest matching documents. By default return all
         """
-        pass
+        q = [0] * len(self.term_inds)
+        term_set = set(self.term_inds.keys())
 
-    def query(self, query_string, num_results):
-        """ Given a query string, return a list of num_results indicating the
-            closest matching documetns
-        """
-        pass    
-    
-    
-if __name__ == '__main__':
-    doc_list = [Document(x) for x in test_doc]
-    tdm = TermDocumentMatrix(doc_list, 100)
-    
-    
-    
+        for word in query_words:
+            if word in term_set:
+                q[self.term_inds[word]] += 1
+
+        q = scipy.matrix(q)
+        sig_inv = scipy.linalg.inv(self.S).transpose()
+
+        # Need to transform q the same way we transformed the initial matrix
+        q_transform = q * self.U * sig_inv
+
+        # compute cosine similarity for each document vector
+        rank = []
+        for i, v in enumerate(self.Vt.transpose()):
+            rank.append((cosine_rank(q_transform, v), i))
+
+        rank.sort(reverse=True)
+
+        n = min(len(rank), num_results)
+        if num_results == -1:
+            n = len(rank)
+
+        return rank[:n]
+
