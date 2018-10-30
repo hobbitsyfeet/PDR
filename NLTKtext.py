@@ -5,10 +5,7 @@ Text = "Peter had a tiny prick, he pissed all about."
 
 import test_doc as text_file
 
-text = ""
-for p in text_file.test_doc:
-	text += p+" "
-#returns a list of important words for document.
+#returns a list of important words from string tf.
 def prepare_document(tf):
 	word_list = []
 	#create a tokenizer that will give us all words.
