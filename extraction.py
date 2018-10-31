@@ -27,9 +27,9 @@ def extractText(link):
 		for paragraphs in soupLink.find_all("p"):
 			text = text + paragraphs.get_text()
 		#strips unwanted terms
-		text = prepare_document(text)
+		list_of_words = prepare_document(text.lower())
 
-		return text
+		return list_of_words
 
 #returns a list of documents for a given section, printout(T/F) will display summary of contents
 def createDocuments(section,printout=False):
