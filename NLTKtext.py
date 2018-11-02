@@ -7,6 +7,7 @@ test_text = "Problem: the paragraph has no topic sentence\nImagine each paragrap
 
 #returns a list of important words from string tf.
 def prepare_document(tf):
+	tf = tf.lower()
 	word_list = []
 	#create a tokenizer that will give us all words.
 	search_tokenizer = nltk.tokenize.RegexpTokenizer('\w+')
