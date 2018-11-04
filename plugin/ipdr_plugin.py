@@ -15,15 +15,19 @@ Written by:		Justin Petluk
 
 #import modules
 
-#import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) 
+#import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)
 
 
 import sublime
 import sublime_plugin
-
+from extraction import createDocuments
+from  matrix import TermDocumentMatrix
 
 
 class ipdrCommand(sublime_plugin.TextCommand):
+
+	def description(self,pos):
+		return "Returns a recommendation from the Python Standard Library"
 
 	def line_next(self,pos):
 		return self.view.line(pos)[1]+1
@@ -31,8 +35,15 @@ class ipdrCommand(sublime_plugin.TextCommand):
 	def line_prev(self,pos):
 		return self.view.line(pos)[0]-1
 
+	#The function that is run when you trigger the plugin.
 	def run(self, view):
+		#Create the documents if not created, or get the if they are already created.
+		PLR = createDocuments("The Python Language Reference",False)
+		PSL = createDocuments("The Python Standard Library",False)
+		tdm = TermDocumentMatrix(documents, k)
+		documents = PLR + PSL
 
+		k = int(25)
 		#declare things
 		comment_list = []
 		comment_block = []
@@ -54,11 +65,22 @@ class ipdrCommand(sublime_plugin.TextCommand):
 		line = lines[cursor_line]
 		line = line.replace("\t", "")
 
+		#if the line starts with a comment then we want to keep it.
 		if (line.find("#", 0, 1) == 0):
 			line = line.replace("\t", "")
 			line = line.replace("\n", "")
 			line = line.replace("#", "")
-			self.view.show_popup(line,1, -1, 500, 200, self.view.hide_popup())
+			#self.view.show_popup(line,1, -1, 500, 200, self.view.hide_popup())
+			#r is the result of our query on the term document.
+			#currently returning five results.
+			r = tdm.query(s.lower().split(), 5)
+			for i, x in enumerate(r):
+				self.view.show_popup(documents[x[1]].title,sublime.COOPERATE_WITH_AUTO_COMPLETE,-1,500,200,documents[x[1]].link)
+		    #     print('----')
+		    #     print(str(i + 1) + ": ", end="")
+		    #     print(documents[x[1]].title + " - " + str(x[0].A[0][0]))
+		    #     print('  ' + documents[x[1]].link)
+		    # print()
 
 		#in each line, check for ''' and #
 		#for line in lines:

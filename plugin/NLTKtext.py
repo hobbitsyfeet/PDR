@@ -13,7 +13,7 @@ def prepare_document(tf):
 	search_tokenizer = nltk.tokenize.RegexpTokenizer('\w+')
 	#Gives us a list of seperated words.
 	tokens = search_tokenizer.tokenize(tf)
-	#nltk.download('stopwords')
+	nltk.download('stopwords')
 	#list of common english words that have little meaning.
 	stop_words = nltk.corpus.stopwords.words('english')
 	#print("Tokens without stopwords removed. \n")
@@ -30,8 +30,8 @@ def prepare_document(tf):
 	#print(counter)
 	return word_list
 
-print("***BEFORE***\n")
-print(test_text)
-print("\n\n***AFTER***\n")
-print(prepare_document(test_text))
+# print("***BEFORE***\n")
+# print(test_text)
+# print("\n\n***AFTER***\n")
+# print(prepare_document(test_text))
 #print(nltk.corpus.stopwords.words('english'))
