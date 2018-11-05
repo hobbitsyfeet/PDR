@@ -15,15 +15,13 @@ Written by:		Justin Petluk
 
 #import modules
 
-#import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) 
+#import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)
 
 
 import sublime
 import sublime_plugin
 
 import subprocess
-
-
 import os
 
 print("Current Working Direcotry: " + os.getcwd())
@@ -31,7 +29,10 @@ try:
 	os.chdir("./PDR")
 	print("Changing to: " + os.getcwd())
 except:
-	print("Already in PDR")
+	if os.getcwd()[-3:] == "PDR":
+		print("Already in PDR")
+	else:
+		print("PDR not found")
 
 
 
@@ -44,17 +45,14 @@ class ipdrCommand(sublime_plugin.TextCommand):
 		return self.view.line(pos)[0]-1
 
 	def run(self, view):
-		#PDRcommand = "C:/Users/legom/Documents/GitHub/PDR"
+
+		#from current Dir, open main when subprocess runs
 		PDRcommand = "./main.py"
 
-		
-		#get a random number
-
-
 		#declare things
-		comment_list = []
-		comment_block = []
-		flag = False
+		#comment_list = []
+		#comment_block = []
+		#flag = False
 
 		#get the current buffer's file name
 		filename = self.view.file_name()
@@ -67,34 +65,37 @@ class ipdrCommand(sublime_plugin.TextCommand):
 		#the cursor is
 		pos = self.view.sel()[0].begin()
 		cursor_line = self.view.rowcol(pos)[0]
-		#print(cursor_line)
-		#print(self.view.line(pos))
+
+		#line is the text on the cursor line
 		line = lines[cursor_line]
 		line = line.replace("\t", "")
 
-		
-		#self.view.show_popup("hello there",1, 1, 10, 10, self.view.hide_popup())
-		#if (line.find("#", 0, 1) == 0):
+		#strip unwanted chars
 		line = line.replace("\t", "")
 		line = line.replace("\n", "")
 		line = line.replace("#", "")
-			
+
+		#try to execute PDR with python 3
 		try:
-			unproc = subprocess.check_output(["python", PDRcommand, line])
+			unproc = subprocess.check_output(["python3", PDRcommand, line])
 
 			print(unproc)
 			output = ""
+
+			#translate all chars and add them to a string, $ in string adds newline
 			for char in range(0,len(unproc)):
+				#look for special chars from main to specify Breakline
 				if chr(unproc[char]) is "$":
 					output = output + "<br>"
+				#the rest are chars to translate
 				else:
 					output = output + chr(unproc[char])
 		except:
 			output = "Please enter plain sentence without special chars"
- 
+
 		self.view.show_popup(output,1, -1, 1000, 1000, self.view.hide_popup())
 		#print(subprocess.check_output(["python", PDRcommand, line]))
-		
+
 
 		#output = subprocess.Popen(PDRcommand, shell = True)
 		#subprocess.check_output("python ./PDR/main.py")

@@ -6,7 +6,7 @@ import sys
 from matrix import TermDocumentMatrix
 from extraction import createDocuments
 if __name__ == '__main__':
-    
+
 
     #print("Starting Process")
 
@@ -14,18 +14,19 @@ if __name__ == '__main__':
     PSL = createDocuments("The Python Standard Library",False)
     documents = PSL
 
-    #print("\nEnter k: ", end="")
-    
-    k = 50
-    #print("Enter query: ", end="")
+    k = 0
     try:
         s = sys.argv[1]
         print("From: " + s + "$")
     except:
+        print("\nEnter k: ", end="")
+        k = int(input())
         print("Enter query: ", end="")
         s = input()
 
-    #print(s)
+    if k is 0:
+        k = 50
+
     tdm = TermDocumentMatrix(documents, k)
     r = tdm.query(s.lower().split(), 5)
     for i, x in enumerate(r):
