@@ -7,7 +7,6 @@ from NLTKtext import prepare_document
 
 #global variable of local path to python documentation
 localDocPath = "python-3.7.1rc2-docs-html/"
-print("PATH"+os.getcwd())
 with open(localDocPath + "contents.html", 'rb') as html:
 	soup = BeautifulSoup (html, features = "html.parser") #create a new BS object
 

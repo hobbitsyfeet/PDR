@@ -15,19 +15,27 @@ Written by:		Justin Petluk
 
 #import modules
 
-#import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)
+#import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) 
 
 
 import sublime
 import sublime_plugin
-from extraction import createDocuments
-from  matrix import TermDocumentMatrix
+
+import subprocess
+
+
+import os
+
+print("Current Working Direcotry: " + os.getcwd())
+try:
+	os.chdir("./PDR")
+	print("Changing to: " + os.getcwd())
+except:
+	print("Already in PDR")
+
 
 
 class ipdrCommand(sublime_plugin.TextCommand):
-
-	def description(self,pos):
-		return "Returns a recommendation from the Python Standard Library"
 
 	def line_next(self,pos):
 		return self.view.line(pos)[1]+1
@@ -35,15 +43,14 @@ class ipdrCommand(sublime_plugin.TextCommand):
 	def line_prev(self,pos):
 		return self.view.line(pos)[0]-1
 
-	#The function that is run when you trigger the plugin.
 	def run(self, view):
-		#Create the documents if not created, or get the if they are already created.
-		PLR = createDocuments("The Python Language Reference",False)
-		PSL = createDocuments("The Python Standard Library",False)
-		tdm = TermDocumentMatrix(documents, k)
-		documents = PLR + PSL
+		#PDRcommand = "C:/Users/legom/Documents/GitHub/PDR"
+		PDRcommand = "./main.py"
 
-		k = int(25)
+		
+		#get a random number
+
+
 		#declare things
 		comment_list = []
 		comment_block = []
@@ -65,24 +72,33 @@ class ipdrCommand(sublime_plugin.TextCommand):
 		line = lines[cursor_line]
 		line = line.replace("\t", "")
 
-		#if the line starts with a comment then we want to keep it.
-		if (line.find("#", 0, 1) == 0):
-			line = line.replace("\t", "")
-			line = line.replace("\n", "")
-			line = line.replace("#", "")
-			#self.view.show_popup(line,1, -1, 500, 200, self.view.hide_popup())
-			#r is the result of our query on the term document.
-			#currently returning five results.
-			r = tdm.query(s.lower().split(), 5)
-			for i, x in enumerate(r):
-				self.view.show_popup(documents[x[1]].title,sublime.COOPERATE_WITH_AUTO_COMPLETE,-1,500,200,documents[x[1]].link)
-		    #     print('----')
-		    #     print(str(i + 1) + ": ", end="")
-		    #     print(documents[x[1]].title + " - " + str(x[0].A[0][0]))
-		    #     print('  ' + documents[x[1]].link)
-		    # print()
+		
+		#self.view.show_popup("hello there",1, 1, 10, 10, self.view.hide_popup())
+		#if (line.find("#", 0, 1) == 0):
+		line = line.replace("\t", "")
+		line = line.replace("\n", "")
+		line = line.replace("#", "")
+			
+		try:
+			unproc = subprocess.check_output(["python", PDRcommand, line])
 
-		#in each line, check for ''' and #
+			print(unproc)
+			output = ""
+			for char in range(0,len(unproc)):
+				if chr(unproc[char]) is "$":
+					output = output + "<br>"
+				else:
+					output = output + chr(unproc[char])
+		except:
+			output = "Please enter plain sentence without special chars"
+ 
+		self.view.show_popup(output,1, -1, 1000, 1000, self.view.hide_popup())
+		#print(subprocess.check_output(["python", PDRcommand, line]))
+		
+
+		#output = subprocess.Popen(PDRcommand, shell = True)
+		#subprocess.check_output("python ./PDR/main.py")
+		#in each line, checkr ''' and #
 		#for line in lines:
 		#	line = line.replace("\t", "")
 		#	line = line.replace("\n", "")
