@@ -24,6 +24,7 @@ import sublime_plugin
 import subprocess
 import os
 
+import webbrowser
 print("Current Working Direcotry: " + os.getcwd())
 try:
 	os.chdir("./PDR")
@@ -44,8 +45,14 @@ class ipdrCommand(sublime_plugin.TextCommand):
 	def line_prev(self,pos):
 		return self.view.line(pos)[0]-1
 
+	def navigate(self,href):
+		webbrowser.open(href)
+		
+
 	def run(self, view):
 
+		#get a random number
+		
 		#from current Dir, open main when subprocess runs
 		PDRcommand = "./main.py"
 
@@ -77,23 +84,52 @@ class ipdrCommand(sublime_plugin.TextCommand):
 
 		#try to execute PDR with python 3
 		try:
-			unproc = subprocess.check_output(["python3", PDRcommand, line])
-
-			print(unproc)
+			unproc = subprocess.check_output(["python", PDRcommand, line],shell=True)
 			output = ""
 
 			#translate all chars and add them to a string, $ in string adds newline
 			for char in range(0,len(unproc)):
 				#look for special chars from main to specify Breakline
 				if chr(unproc[char]) is "$":
-					output = output + "<br>"
+					output = output + "<br />"
 				#the rest are chars to translate
 				else:
 					output = output + chr(unproc[char])
+
+
 		except:
 			output = "Please enter plain sentence without special chars"
+		#print(output)
 
-		self.view.show_popup(output,1, -1, 1000, 1000, self.view.hide_popup())
+		counter = 0
+		final=""
+		while counter < 5:
+			counter = counter + 1
+			substring = output
+			substring = substring[substring.find(str(counter)+":"):]
+			substring = substring[:substring.find(".html")+5]
+
+			link = substring[substring.find("/"):]
+			linkDIR = substring[substring.rfind(" ")+1:substring.find("/")]
+			#print(substring)
+			style = "style=\""
+			style_format = "color: white; "
+			style_end = "\""
+			style = style + style_format + style_end
+			Docpath = "<a "+style+"href=\"" +"file:/"+os.getcwd() + "/python-3.7.1rc2-docs-html/" + linkDIR + link +"\">"
+			#print(Docpath)
+
+			substring = output
+			substring = substring[substring.find(str(counter)+":"):]
+			substring = substring[:substring.find(".html")+5]
+			substring = Docpath + substring + "</a>"
+			final = final + substring + "<br />"
+			#print(final)
+		output = output[:output.find("1:")] + "<br />" + final
+
+
+
+		self.view.show_popup(output,sublime.COOPERATE_WITH_AUTO_COMPLETE, -1, 1000, 1000,on_navigate=self.navigate)
 		#print(subprocess.check_output(["python", PDRcommand, line]))
 
 
