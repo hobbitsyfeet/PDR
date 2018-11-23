@@ -18,3 +18,18 @@
 
 #A function that sorts a iterable container in an ascending or decending order
 ##Expecting to get some sort of sort, or containter
+
+#For multiple threading, you need to create a new thread here and pass new_sock to it. The thread will use new_sock to communicate with the client.
+##Expecting some sort of threading library or communication
+
+#For creating the error every 5th time but not repeating the error if one was already sent
+##Expecting error handling
+
+#Used for calculating the length squared of next segment.
+##Expecting a math library
+
+#something went seriously wrong so reset everything
+##Expecting error handling
+
+#Get the pitch of camera from settings
+##Expecting graphics or camera library
