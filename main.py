@@ -3,7 +3,7 @@ import os
 import sys
 
 
-from matrix import TermDocumentMatrix
+from matrix import TermDocumentMatrix, TFIDF_Matrix
 from extraction import createDocuments
 if __name__ == '__main__':
 
@@ -27,7 +27,8 @@ if __name__ == '__main__':
     if k is 0:
         k = 50
 
-    tdm = TermDocumentMatrix(documents, k)
+    # tdm = TermDocumentMatrix(documents, k)
+    tdm = TFIDF_Matrix(documents, k)
     r = tdm.query(s.lower().split(), 5)
     for i, x in enumerate(r):
         print(str(i + 1) + ": ", end="")

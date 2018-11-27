@@ -1,5 +1,6 @@
 import scipy
 import numpy as np
+import math
 from scipy import linalg
 from scipy.sparse import linalg
 from test_doc import test_doc
@@ -29,7 +30,7 @@ class TermDocumentMatrix():
         Rows correspond to terms and columns to documents.
     """
     def __init__(self, document_list, k):
-        self.term_inds = []
+        self.term_inds = {}
         self.k = k
         self.matrix = None
         self.get_terms(document_list)
@@ -102,4 +103,26 @@ class TFIDF_Matrix(TermDocumentMatrix):
         self.U, self.S, self.Vt = singular_value_decomp(self.matrix, self.k)
 
     def construct_matix(self, document_list):
-        pass
+        self.matrix = scipy.matrix(
+            [[0] * len(document_list)] * len(self.term_inds), dtype=float)
+
+        idf = [0] * len(self.term_inds)
+        # Count the number of documents containing the term 
+        for term in self.term_inds.keys():
+            for doc in document_list:
+                if term in doc.text:
+                    idf[self.term_inds[term]] += 1
+        
+        # idf(term) = log (total number of docs / number of docs containing term)
+        for term in idf.keys():
+            idf[term] = math.log(len(document_list) / idf[term])
+
+        for j, doc in enumerate(document_list):
+            for term in doc.text:
+                i = self.term_inds[term]
+                self.matrix.A[i][j] += 1
+
+        # tf-idf(term, doc) = term-count * idf(term)
+        for i in range(len(self.matrix.A)):
+            for j in range(len(i)):
+                self.matrix.A[i][j] *= idf[i]
