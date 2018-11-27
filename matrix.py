@@ -10,30 +10,31 @@ def cosine_rank(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
 
+def singular_value_decomp(matrix, k):
+    """ Singular value decompisition
+        U  - unitary matrix 
+        S  - diagonal matrix containing k - largest singular values
+        Vt - transpose of document vectors 
+    """
+    smaller_dim = min(matrix.shape)
+    # if k too large, keep as many as possible
+    k = min( smaller_dim - 1, k)
+    U, S, Vt = scipy.sparse.linalg.svds(matrix, k)
+    S = scipy.matrix(np.diag(S))
+    return U, S, Vt
+
+
 class TermDocumentMatrix():
     """ Rank-k approximation to the term-document matrix for a given set of documents.
         Rows correspond to terms and columns to documents.
     """
-
     def __init__(self, document_list, k):
         self.term_inds = []
         self.k = k
         self.matrix = None
-        # Could be used to save/load file easily later
-        self.matrix_str = ""
-        
         self.get_terms(document_list)
         self.construct_matrix(document_list)
-
-        # Singular value decompisition
-        #  U  - unitary matrix 
-        #  S  - diagonal matrix containing k - largest singular values
-        #  Vt - transpose of document vectors
-        self.U, self.S, self.Vt = scipy.sparse.linalg.svds(
-            self.matrix, 
-            k=min(min(self.matrix.shape)-1, self.k)) # if k too large, keep as many as possible
-        self.S = scipy.matrix(np.diag(self.S))
-
+        self.U, self.S, self.Vt = singular_value_decomp(self.matrix, self.k)
 
     def get_terms(self, document_list):
         """ Fill term_inds map with an index for each unique term
@@ -89,3 +90,16 @@ class TermDocumentMatrix():
 
         return rank[:n]
 
+
+class TFIDF_Matrix(TermDocumentMatrix):
+
+    def __init__(self, document_list, k):
+        self.term_inds = []
+        self.k = k
+        self.matrix = None
+        self.get_terms(document_list)
+        self.construct_matrix(document_list)
+        self.U, self.S, self.Vt = singular_value_decomp(self.matrix, self.k)
+
+    def construct_matix(self, document_list):
+        pass
