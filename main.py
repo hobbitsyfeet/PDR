@@ -1,8 +1,5 @@
-#
 import os
 import sys
-
-
 from matrix import TermDocumentMatrix, TFIDF_Matrix
 from extraction import createDocuments
 if __name__ == '__main__':
