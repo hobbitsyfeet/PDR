@@ -17,15 +17,17 @@ if __name__ == '__main__':
     PSL = createDocuments("The Python Standard Library",False)
     documents = PSL + PLR
 
-    if sys.argv[0] != 2:
+    if len(sys.argv) < 2:
         raise RuntimeError('Missing argument')
     
     k = 50
     tdm = None
     if sys.argv[1] == '1':
         tdm = TFIDF_Matrix(documents, k)
+        print('ya')
     else:
         tdm = TermDocumentMatrix(documents, k)
+        print('no')
 
     n = int(input())
     for i in range(n):

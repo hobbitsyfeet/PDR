@@ -2,6 +2,8 @@ import os
 import sys
 from matrix import TermDocumentMatrix, TFIDF_Matrix
 from extraction import createDocuments
+from NLTKtext import prepare_document
+
 if __name__ == '__main__':
 
 
@@ -26,7 +28,9 @@ if __name__ == '__main__':
 
     # tdm = TermDocumentMatrix(documents, k)
     tdm = TFIDF_Matrix(documents, k)
-    r = tdm.query(s.lower().split(), 5)
+    r = tdm.query(prepare_document(s), 5)
+    print(prepare_document(s))
+
     for i, x in enumerate(r):
         print(str(i + 1) + ": ", end="")
         print(documents[x[1]].title + " - " + str(x[0].A[0][0]))
