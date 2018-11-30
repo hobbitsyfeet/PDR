@@ -19,17 +19,23 @@
 #A function that sorts a iterable container in an ascending or decending order
 ##Expecting to get some sort of sort, or containter
 
-#For multiple threading, you need to create a new thread here and pass new_sock to it. The thread will use new_sock to communicate with the client.
-##Expecting some sort of threading library or communication
+#Create a thread to send data through sockects
+## expect to get thredding and socket
 
-#For creating the error every 5th time but not repeating the error if one was already sent
-##Expecting error handling
+#Starts communication with the client, sending data and recieving it
+##Expecting sokect
 
-#Used for calculating the length squared of next segment.
-##Expecting a math library
+#try to add two numbers, if there is an error, through an exception
+##Expecting exceptions
 
-#something went seriously wrong so reset everything
-##Expecting error handling
+#Add uniqiue elements to a data structure, paired with some other data
+##Expect to get Dictionaries
 
-#Get the pitch of camera from settings
-##Expecting graphics or camera library
+# Write the result out to an opened file
+##Expecting file handling
+
+#Draw a triangle or other shape at coordinates (x,y)
+##expecting graphics
+
+#Return the value of x log10
+## Expecting Math
